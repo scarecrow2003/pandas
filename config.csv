@@ -1,0 +1,4 @@
+company,format,date_format
+alabaster,alabaster_date_tradelist.csv,%Y%m%d
+bernstein,bernstein_TradeInputList_date.csv,%y%m%d
+comwealth,trades_comwealth_date.csv,%b%Y
