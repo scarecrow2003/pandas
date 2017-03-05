@@ -1,4 +1,4 @@
-company,format,date_format
-alabaster,alabaster_date_tradelist.csv,%Y%m%d
-bernstein,bernstein_TradeInputList_date.csv,%y%m%d
-comwealth,trades_comwealth_date.csv,%b%Y
+company,format,date_format,field_date,
+alabaster,alabaster_date_tradelist.csv,%Y%m%d,%Y%b%d
+bernstein,bernstein_TradeInputList_date.csv,%y%m%d,%m/%d/%Y
+comwealth,trades_comwealth_date.csv,%b%Y,%d.%m.%Y

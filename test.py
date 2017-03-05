@@ -10,11 +10,17 @@ def daily_job():
 
 def read_data(companies):
     records = []
-    for company, file in companies.items():
-        config = pd.read_csv('input-'+company+'/config.csv')
-        one = pd.read_csv('input-'+company+'/'+file, parse_dates=['Date'])
-        for index, row in config.iterrows():
-            one.rename(columns={row['custom']: row['standard']}, inplace=True)
+    fields = pd.read_csv('fields.csv', index_col='company')
+    for company, config in companies.items():
+        one = pd.read_csv('input-'+company+'/'+config['file'], parse_dates=['Date'], index_col='Date', date_parser=lambda x:pd.datetime.strptime(x, config['date']))
+        one_row = fields.loc[company]
+        for name, value in one_row.iteritems():
+            if name != value:
+                one.rename(columns={value: name}, inplace=True)
+        # for column in one_fields:
+        #     print(column)
+        # for index, row in config.iterrows():
+        #     one.rename(columns={row['custom']: row['standard']}, inplace=True)
         records.append(one)
     return records
 
@@ -25,7 +31,7 @@ def read_config():
     for index, row in config.iterrows():
         date_format = row['date_format']
         today = datetime.datetime.today().strftime(date_format)
-        result[row['company']] = row['format'].replace('date', today)
+        result[row['company']] = {'file': row['format'].replace('date', today), 'date': row['field_date']}
     return result
 
 CONFIG_FILE = 'config.csv'
