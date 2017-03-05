@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import datetime
 
 
@@ -10,18 +11,22 @@ def daily_job():
 
 def read_data(companies):
     records = []
-    fields = pd.read_csv('fields.csv', index_col='company')
+    fields = pd.read_csv(FIELDS_FILE, index_col='company')
+    mapping = pd.read_csv(MAPPING_FILE)
     for company, config in companies.items():
-        one = pd.read_csv('input-'+company+'/'+config['file'], parse_dates=['Date'], index_col='Date', date_parser=lambda x:pd.datetime.strptime(x, config['date']))
         one_row = fields.loc[company]
+        date_name = one_row['Date']
+        one = pd.read_csv('input-'+company+'/'+config['file'], parse_dates=[date_name], date_parser=lambda x:pd.datetime.strptime(x, config['date']))
         for name, value in one_row.iteritems():
             if name != value:
                 one.rename(columns={value: name}, inplace=True)
-        # for column in one_fields:
-        #     print(column)
-        # for index, row in config.iterrows():
-        #     one.rename(columns={row['custom']: row['standard']}, inplace=True)
-        records.append(one)
+            if name not in one.columns:
+                one[name] = np.nan
+        for index, row in one.iterrows():
+            if row.name in mapping.index:
+                mapping_row = mapping.loc[row.name]
+                one.set_value(row.name, 'Security', mapping_row['Label'])
+        records.append(one[['Security', 'Date', 'Price', 'Quantity', 'Beta']])
     return records
 
 
@@ -35,4 +40,6 @@ def read_config():
     return result
 
 CONFIG_FILE = 'config.csv'
+FIELDS_FILE = 'fields.csv'
+MAPPING_FILE = 'mapping.csv'
 daily_job()
